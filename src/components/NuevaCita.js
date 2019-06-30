@@ -11,9 +11,19 @@ class NuevaCita extends Component {
     }
   };
 
-  handleChange() {
-    
-  }
+  handleChange = e => {
+    //colocar lo que escribe el user en el state
+
+    //para actualizar el estado se debe crear un nuevo object literal con el mismo nombre
+    //dado que si no lo haces asi, creara un nuevo objecto en este caso objeto cita dentro del
+    //state
+    this.setState({
+      cita: {
+        ...this.state.cita,
+        [e.target.name]: e.target.value
+      }
+    });
+  };
 
   render() {
     return (
@@ -34,6 +44,7 @@ class NuevaCita extends Component {
                   placeholder="Nombre Mascota"
                   name="mascota"
                   onChange={this.handleChange}
+                  value={this.state.cita.mascota}
                 />
               </div>
             </div>
