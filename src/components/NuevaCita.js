@@ -1,15 +1,20 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
+import uuid from "uuid";
+
+const stateInicial = {
+  cita: {
+    mascota: "",
+    propietario: "",
+    fecha: "",
+    hora: "",
+    sintomas: ""
+  },
+  error: false
+};
 
 class NuevaCita extends Component {
-  state = {
-    cita: {
-      mascota: "",
-      propietario: "",
-      fecha: "",
-      hora: "",
-      sintomas: ""
-    }
-  };
+  state = { ...stateInicial };
 
   handleChange = e => {
     //colocar lo que escribe el user en el state
@@ -25,14 +30,57 @@ class NuevaCita extends Component {
     });
   };
 
+  handleSubmit = e => {
+    e.preventDefault();
+
+    const { mascota, propietario, fecha, hora, sintomas } = this.state.cita;
+
+    //Validar campos
+
+    if (
+      mascota === "" ||
+      propietario === "" ||
+      fecha === "" ||
+      hora === "" ||
+      sintomas === ""
+    ) {
+      this.setState({
+        error: true
+      });
+
+      return;
+    }
+
+    //Generar objeto con los datos
+    const nuevaCita = { ...this.state.cita };
+    nuevaCita.id = uuid();
+
+    //Agregar cita al state de app
+    this.props.crearNuevaCita(nuevaCita);
+
+    //Colocar en el state el stateInicial
+    this.setState({
+      ...stateInicial
+    });
+  };
+
   render() {
+    const { error } = this.state;
+
     return (
       <div className="card mt-5 py-5">
         <div className="card-body">
           <h2 className="card-title text-center mb-5">
             Llena el formulario para crear una nueva cita
           </h2>
-          <form>
+
+          {error ? (
+            <div className="alert alert-danger mt-2 mb-5 text-center">
+              Todos los campos son obligatorios
+            </div>
+          ) : null}
+
+          <form onSubmit={this.handleSubmit}>
             <div className="form-group row">
               <label className="col-sm-4 col-lg-2 col-form-label">
                 Nombre Mascota
@@ -59,6 +107,8 @@ class NuevaCita extends Component {
                   className="form-control"
                   placeholder="Nombre Dueño Mascota"
                   name="propietario"
+                  onChange={this.handleChange}
+                  value={this.state.cita.propietario}
                 />
               </div>
             </div>
@@ -66,7 +116,13 @@ class NuevaCita extends Component {
             <div className="form-group row">
               <label className="col-sm-4 col-lg-2 col-form-label">Fecha</label>
               <div className="col-sm-8 col-lg-4">
-                <input type="date" className="form-control" name="fecha" />
+                <input
+                  type="date"
+                  className="form-control"
+                  name="fecha"
+                  onChange={this.handleChange}
+                  value={this.state.cita.fecha}
+                />
               </div>
 
               <label className="col-sm-4 col-lg-2 col-form-label">Hora</label>
@@ -76,6 +132,8 @@ class NuevaCita extends Component {
                   className="form-control"
                   placeholder="Nombre Mascota"
                   name="hora"
+                  onChange={this.handleChange}
+                  value={this.state.cita.hora}
                 />
               </div>
             </div>
@@ -89,6 +147,8 @@ class NuevaCita extends Component {
                   className="form-control"
                   name="sintomas"
                   placeholder="Describe los sintomas"
+                  onChange={this.handleChange}
+                  value={this.state.cita.sintomas}
                 />
               </div>
             </div>
@@ -104,5 +164,9 @@ class NuevaCita extends Component {
     );
   }
 }
+
+NuevaCita.propTypes = {
+  crearNuevaCita: PropTypes.func.isRequired
+};
 
 export default NuevaCita;
